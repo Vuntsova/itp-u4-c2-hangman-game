@@ -1,4 +1,4 @@
-from .exceptions import *
+# from .exceptions import *
 import random
 from pprint import pprint
 
@@ -9,7 +9,7 @@ LIST_OF_WORDS = ["Python"]
 def _get_random_word(list_of_words):
     if len(list_of_words) == 0:
         raise InvalidListOfWordsException()
-    return random.choice(list_of_words)
+    return list_of_words[random.randint(0, len(list_of_words)-1)]
 
 
 def _mask_word(word):
@@ -47,6 +47,9 @@ def _uncover_word(answer_word, masked_word, character):
     result = "".join(result)    
     return result
     
+
+
+
 def start_new_game(list_of_words=None, number_of_guesses=5):
     if list_of_words is None:
         list_of_words = LIST_OF_WORDS
@@ -62,21 +65,25 @@ def start_new_game(list_of_words=None, number_of_guesses=5):
     }
 
     return game
-
+'''
+    start_new_game(list_of_words="Python", number_of_guesses=5)
+    
+    ||
+    ||
+    \/
+    
+    game = {
+    'answer_word': 'Python',
+    'masked_word': '******',
+    'previous_guesses': [],
+    'remaining_misses': 5}
+    
+    '''
 def guess_letter(game, letter):
-    
-#     saving the initial value of number_of_guesses
     temp = game['remaining_misses']
-    
-#     making sure there are no capital letters in the answer_word
     game['answer_word']=game['answer_word'].lower()
-    
-#     making sure the letter is not capital
     letter=letter.lower()
-    
-    if game['answer_word'] == game['masked_word'] or game['remaining_misses'] == 0:
-        raise GameFinishedException()
-        
+    flag = False
     if letter and letter in game['answer_word']:
         game['masked_word'] =_uncover_word(game['answer_word'], game['masked_word'], letter)
         game['previous_guesses'].append(letter)
@@ -85,61 +92,46 @@ def guess_letter(game, letter):
         game['previous_guesses'].append(letter)
         game['remaining_misses']-=1
         
-    if game['answer_word'] == game['masked_word'] and game['remaining_misses'] == temp or game['answer_word'] == game['masked_word']:
+    if game['answer_word'] == game['masked_word'] and game['remaining_misses'] == temp:
         game['previous_guesses'].append(letter)
-        raise GameWonException()
+        flag = True
+        print ('GameWonException')
         
+    if game['answer_word'] == game['masked_word'] and game['remaining_misses'] > 0:
+        flag = True
+        print ('GameFinishedException') 
+
+    
     if game['answer_word'] != game['masked_word'] and game['remaining_misses'] == 0:
+        flag = True
+        print ('GameLostException') 
+    
         
-        raise GameLostException()
+    if str(game['answer_word']) == str(game['masked_word']):
+        flag = True
+        print ('GameWonException')
+    
+    if game['remaining_misses'] == 0:
+        flag = True
+        print ('GameLostException')
+        
+    return flag
+    
 
-
-    
-        
-    
-    
-    
-        
-    
-        
-    
-    
-        
-    
-        
-        
-    
-        
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-#     print(game['masked_word'])
-#     return _uncover_word(game['answer_word'], game['masked_word'], letter)
 
 # print(_mask_word('word'))
-# print(_uncover_word('Pythony', '*******', 'y'))
-# this_vals={
-#     'answer_word': 'Javascript', 
-#     'masked_word': '**********', 
-#     'previous_guesses': [], 
-#     'remaining_misses': 5
-#     }
-# print("---------------")
-# print("---------------")
-# print("---------------")
-# pprint(start_new_game())
-# print(">--------------->")
-# pprint(guess_letter(this_vals, "a"))
-# print(">--------------->")
+# print(_uncover_word('Pythony', '*******', 'pythony'))
+this_vals={
+    'answer_word': 'Python', 
+    'masked_word': '******', 
+    'previous_guesses': [], 
+    'remaining_misses': 5
+    }
+print("---------------")
+print("---------------")
+print("---------------")
+pprint(start_new_game())
+print(">--------------->")
+pprint(guess_letter(this_vals, "n"))
+print(">--------------->")
 
